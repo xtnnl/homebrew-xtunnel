@@ -2,6 +2,11 @@ class Xtunnel < Formula
   desc "Lightweight ngrok alternative tunnel utility"
   homepage "https://xtunnel.ru"
   version "2.7.0"
+  # xtunnel CLI is a proprietary commercial product; no SPDX identifier applies.
+  # `:cannot_represent` is Homebrew's documented value for licenses that can't be
+  # expressed in SPDX terms (commercial / EULA-only); avoids `brew audit --strict`
+  # warning about a missing `license` field that would otherwise flag the formula.
+  license :cannot_represent
 
   on_macos do
     if Hardware::CPU.arm?
