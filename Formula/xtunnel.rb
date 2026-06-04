@@ -13,12 +13,34 @@ class Xtunnel < Formula
     end
   end
 
+  # #733: Linuxbrew support — addresses customer dead-end «formula requires at
+  # least a URL» on Linux. Covers Homebrew's officially-supported 64-bit archs
+  # (x86_64 + aarch64). 32-bit ARM and musl variants remain manual-tarball-install
+  # — Homebrew on Linux doesn't support them.
+  on_linux do
+    on_intel do
+      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-x64.tar.gz"
+      sha256 "ea59efb4657e23af77fe3cd2d6a8ac839930edd88ec2f870a249276a0bb47665"
+    end
+    on_arm do
+      # ARM64 / aarch64 — Raspberry Pi 4+, AWS Graviton, Linux on Apple Silicon, etc.
+      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-arm64.tar.gz"
+      sha256 "624e3a981c2e5834bea4170e1e963e76e0fbe0dd428135b30b90011c0b18911e"
+    end
+  end
+
   def install
     bin.install "xtunnel"
-    prefix.install "xtunnel-cert.cer"
+    # The developer certificate ships only on macOS bundles (Linux tarballs don't
+    # include it — Linux uses standard CA validation, no keychain step needed).
+    prefix.install "xtunnel-cert.cer" if File.exist?("xtunnel-cert.cer")
   end
 
   def caveats
+    # The developer-cert instructions only make sense on macOS; on Linux there's
+    # no keychain to trust, no Gatekeeper warning to dismiss. Skip them entirely.
+    return unless OS.mac?
+
     cert_installed = quiet_system("security", "find-certificate", "-c", "xtunnel.dev")
 
     if cert_installed
