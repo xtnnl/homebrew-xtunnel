@@ -19,18 +19,25 @@ class Xtunnel < Formula
   end
 
   # #733: Linuxbrew support — addresses customer dead-end «formula requires at
-  # least a URL» on Linux. Covers Homebrew's officially-supported 64-bit archs
-  # (x86_64 + aarch64). 32-bit ARM and musl variants remain manual-tarball-install
-  # — Homebrew on Linux doesn't support them.
+  # least a URL» on Linux. Explicit if/elsif/else rather than nested on_intel/on_arm
+  # so unsupported architectures (32-bit ARM, anything Tier-3 like RISC-V) fail
+  # with a clear `odie` instead of silently producing a formula with no URL.
+  #
+  # Covers Homebrew's officially-supported 64-bit Linux archs: x86_64 + aarch64.
+  # 32-bit ARM (`linux-arm` tarball) and musl variants (`linux-musl-*`) intentionally
+  # not covered — Homebrew on Linux doesn't officially support them; those remain
+  # available via manual tarball install from dl.xtunnel.ru.
   on_linux do
-    on_intel do
+    if Hardware::CPU.intel?
       url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-x64.tar.gz"
       sha256 "ea59efb4657e23af77fe3cd2d6a8ac839930edd88ec2f870a249276a0bb47665"
-    end
-    on_arm do
+    elsif Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       # ARM64 / aarch64 — Raspberry Pi 4+, AWS Graviton, Linux on Apple Silicon, etc.
       url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-arm64.tar.gz"
       sha256 "624e3a981c2e5834bea4170e1e963e76e0fbe0dd428135b30b90011c0b18911e"
+    else
+      odie "xtunnel Homebrew formula supports Linux x86_64 and arm64 only. " \
+           "Use manual tarball install from https://dl.xtunnel.ru/v#{version}/ for this architecture."
     end
   end
 
@@ -62,6 +69,10 @@ class Xtunnel < Formula
   end
 
   test do
-    assert_predicate bin/"xtunnel", :exist?, "xtunnel executable should exist"
+    # Stronger than mere `exist?` — proves the binary launches AND reports the
+    # right version. Catches a class of bottle / arch / runtime breakage that a
+    # pure `:exist?` check would miss (downloaded tarball was for the wrong arch,
+    # binary segfaults at startup, etc.).
+    assert_match version.to_s, shell_output("#{bin}/xtunnel --version")
   end
 end
