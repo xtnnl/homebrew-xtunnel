@@ -1,7 +1,7 @@
 class Xtunnel < Formula
   desc "Lightweight ngrok alternative tunnel utility"
   homepage "https://xtunnel.ru"
-  version "2.7.0"
+  version "2.8.0"
   # xtunnel CLI is a proprietary commercial product; no SPDX identifier applies.
   # `:cannot_represent` is Homebrew's documented value for licenses that can't be
   # expressed in SPDX terms (commercial / EULA-only); avoids `brew audit --strict`
@@ -10,11 +10,11 @@ class Xtunnel < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-osx-arm64.tar.gz"
-      sha256 "2e81f4cd0ab251de38236f06b9000beddbccbc568284c65fad600eb5ac5a9f8b"
+      url "https://dl.xtunnel.ru/v2.8.0/xtunnel-v2.8.0-osx-arm64.tar.gz"
+      sha256 "6c3a752b1d417b70a83536efffc42eab35775d41affa1a33f479d84dbf333508"
     else
-      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-osx-x64.tar.gz"
-      sha256 "f4aaa997d886cc4d6aefbc458e711373caa6449c55c443368c92398d45fb7aae"
+      url "https://dl.xtunnel.ru/v2.8.0/xtunnel-v2.8.0-osx-x64.tar.gz"
+      sha256 "8428e573346cb6b836463f85fc1bc98ddb89310fc319ce2dc71a07b075569e05"
     end
   end
 
@@ -29,12 +29,12 @@ class Xtunnel < Formula
   # available via manual tarball install from dl.xtunnel.ru.
   on_linux do
     if Hardware::CPU.intel?
-      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-x64.tar.gz"
-      sha256 "ea59efb4657e23af77fe3cd2d6a8ac839930edd88ec2f870a249276a0bb47665"
+      url "https://dl.xtunnel.ru/v2.8.0/xtunnel-v2.8.0-linux-x64.tar.gz"
+      sha256 "a9417e48482517ee01b8dda6f75a76c0f46e87cac4c3416885a24f41b802a13d"
     elsif Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       # ARM64 / aarch64 — Raspberry Pi 4+, AWS Graviton, Linux on Apple Silicon, etc.
-      url "https://dl.xtunnel.ru/v2.7.0/xtunnel-v2.7.0-linux-arm64.tar.gz"
-      sha256 "624e3a981c2e5834bea4170e1e963e76e0fbe0dd428135b30b90011c0b18911e"
+      url "https://dl.xtunnel.ru/v2.8.0/xtunnel-v2.8.0-linux-arm64.tar.gz"
+      sha256 "ddfb5bc5487a17459d5ddc96bd64171ad892eb8bbd1b38317e28ec93e31d01d9"
     else
       odie "xtunnel Homebrew formula supports Linux x86_64 and arm64 only. " \
            "Use manual tarball install from https://dl.xtunnel.ru/v#{version}/ for this architecture."
